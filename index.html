@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en" data-theme="neon">
+<html lang="en" data-theme="paper">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#080b18">
+<meta name="theme-color" content="#ffffff">
 <meta name="description" content="A complete offline-ready scientific calculator and measurement toolkit.">
 <title>Orbit — Scientific Calculator Suite</title>
 <style>
@@ -21,6 +21,28 @@
 @media(max-width:390px){.grid.three{grid-template-columns:1fr}.key-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.top-actions{gap:5px}.theme-select{max-width:142px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 @media(max-width:760px){.mobile-nav{justify-content:flex-start;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;scroll-snap-type:x proximity}.mobile-nav::-webkit-scrollbar{display:none}.mobile-nav .nav-item{flex:0 0 74px;min-width:74px;scroll-snap-align:start}}
+/* Fixed paper theme: monochrome, flat, and free of motion or glass effects. */
+:root{color-scheme:light;--bg:#fff;--bg2:#fff;--panel:#fff;--panel2:#fff;--line:#111;--text:#111;--muted:#444;--accent:#111;--accent2:#111;--glow:transparent;--good:#111;--warn:#111;--bad:#111;--radius:3px;--shadow:none}
+html,body{min-height:100%;background:#fff!important;color:#111!important}
+body{font-family:Arial,Helvetica,sans-serif;transition:none;overflow-x:hidden}
+body:before,body:after{display:none!important;content:none!important}
+*,*:before,*:after{background-image:none!important;box-shadow:none!important;text-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important;animation:none!important;transition:none!important;color:#111!important;border-color:#111!important}
+body :where(*){background-color:#fff!important}
+.sidebar,.mobile-nav,.topbar,.main,.content,.card,.display,.result-box,.button,.key,.input,.select,.history-entry,.planet,.abacus,.abacus-wrap,.graph-canvas,.toggle-group{background-color:#fff!important;border-color:#111!important;border-radius:3px!important;box-shadow:none!important;backdrop-filter:none!important}
+.card{border:1px solid #111!important}
+.key,.button,.input,.select{border:1px solid #111!important}
+.key:hover,.button:hover,.history-entry:hover,.nav-item:hover{transform:none!important;box-shadow:none!important;color:#111!important}
+.key.equals,.button.primary,.nav-item.active,.toggle-group button.active,.brand-mark{background:#111!important;color:#fff!important;border-color:#111!important}
+.nav-item.active *{background:#111!important;color:#fff!important}
+.brand-mark *,.key.equals *,.button.primary *,.toggle-group button.active *{color:#fff!important}
+.abacus{background:#fff!important;border:2px solid #111!important}
+.abacus:before,.abacus:after,.rod:before,.beam{background:#111!important}
+.bead{background:#fff!important;border:1px solid #111!important}
+.meter{background:#fff!important;border:1px solid #111!important}
+.meter-marker{background:#111!important}
+.planet-orb,.online-dot{background:#111!important;box-shadow:none!important}
+@media(max-width:900px){.calc-layout,.grid.two,.grid.equal{grid-template-columns:1fr!important}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
@@ -31,7 +53,7 @@
   <div class="sidebar-foot"><span class="online-dot"></span>All tools run locally<br><span style="padding-left:14px">No account · No network required</span></div>
 </aside>
 <main class="main">
-<header class="topbar"><div class="crumb">Workspace <span aria-hidden="true">/</span> <strong id="crumbName">Scientific calculator</strong></div><div class="top-actions"><div class="status-pill"><span class="online-dot"></span>Offline ready</div><label class="sr-only" for="themeSelect">Color theme</label><select id="themeSelect" class="theme-select" aria-label="Choose color theme"><option value="neon">◈ Neon cyber</option><option value="space">✦ Deep space</option><option value="sunset">◉ Sunset</option><option value="light">☼ Light minimal</option></select></div></header>
+<header class="topbar"><div class="crumb">Workspace <span aria-hidden="true">/</span> <strong id="crumbName">Scientific calculator</strong></div><div class="top-actions"><div class="status-pill"><span class="online-dot"></span>Offline ready</div></div></header>
 <div class="content">
 <section class="page-head"><div><div class="eyebrow">Your pocket-sized lab</div><h1 id="pageTitle">Scientific calculator</h1><p id="pageDescription">Explore expressions, conversions, and everyday math in one place.</p></div><div class="head-tag">⌘ &nbsp; 12 precision tools</div></section>
 
@@ -124,7 +146,7 @@ function makeNav(){const html=tools.map(t=>`<button class="nav-item${t.id==="cal
 makeNav();
 function navigate(id){const tool=tools.find(t=>t.id===id);if(!tool)return;$$('.tool-view').forEach(v=>v.classList.toggle('active',v.id===`view-${id}`));$$('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.tool===id));$('#crumbName').textContent=tool.label;$('#pageTitle').textContent=tool.label;$('#pageDescription').textContent=tool.desc;if(id==='graph')requestAnimationFrame(drawGraph);}
 document.addEventListener('click',e=>{const n=e.target.closest('[data-tool]');if(n)navigate(n.dataset.tool)});
-const themeSelect=$('#themeSelect');themeSelect.value=localStorage.getItem('orbit-theme')||'neon';document.documentElement.dataset.theme=themeSelect.value;themeSelect.addEventListener('change',()=>{document.documentElement.dataset.theme=themeSelect.value;localStorage.setItem('orbit-theme',themeSelect.value);if($('#view-graph').classList.contains('active'))drawGraph()});
+document.documentElement.dataset.theme='paper';
 // A tiny tokenizer and Pratt parser keeps expression evaluation safe: no eval or Function constructor.
 const functions={sin:Math.sin,cos:Math.cos,tan:Math.tan,asin:Math.asin,acos:Math.acos,atan:Math.atan,sinh:Math.sinh,cosh:Math.cosh,tanh:Math.tanh,log:Math.log10,ln:Math.log,log2:Math.log2,sqrt:Math.sqrt,cbrt:Math.cbrt,abs:Math.abs,exp:Math.exp,inv:x=>1/x,fact:factorial};
 function factorial(n){if(!Number.isInteger(n)||n<0||n>170)throw Error('Factorial needs a whole number from 0 to 170');let r=1;for(let i=2;i<=n;i++)r*=i;return r}
