@@ -1,0 +1,48 @@
+const CACHE_NAME = "orbit-flat-v2";
+const APP_ROOT = new URL("./", self.location).href;
+const APP_FILES = [
+  "./",
+  "./index.html",
+  "./manifest.webmanifest",
+  "./public/site-mark.png",
+  "./public/icon-192.png",
+  "./public/icon-512.png"
+];
+
+self.addEventListener("install", event => {
+  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)));
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", event => {
+  event.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener("fetch", event => {
+  if (event.request.method !== "GET") return;
+  event.respondWith(
+    caches.match(event.request).then(cached => {
+      const network = fetch(event.request).then(response => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        }
+        return response;
+      }).catch(() => null);
+
+      if (cached) {
+        network.catch(() => {});
+        return cached;
+      }
+
+      return network.then(response =>
+        response || caches.match("./index.html", { ignoreSearch: true })
+      );
+    })
+  );
+});
